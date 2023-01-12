@@ -1,13 +1,5 @@
 import sqlite3
 
-from django.template import Origin
-#from datetime import datetime
-
-#from django.template import Origin
-#from spot_funcs import get_artist_info
-#from Spotifies import daily_insert
-#import Genresie
-
 class Origin_Story:
     database = 'my_spotipy.db'
     tables = ['daily_tracks','daily_artists','recently_played','artist_catalog']
@@ -36,7 +28,7 @@ class Origin_Story:
                 ('song_name', 'TEXT'),
                 ('song_link', 'TEXT'),
                 ('image', 'TEXT'),
-                ('last_played', 'TEXT'),]}
+                ('last_played', 'datetime'),]}
     
     def __init__(self):
         self.woah = 'this whole time I should have been using class variables'
@@ -140,12 +132,22 @@ class Origin_Story:
         conn.close()
 
     def initialize(self):
+        '''
+        Incorporates all the prior functions into one to:
+            -create sqlite3 db file
+            -create 4 tables based on schema in self.____
+            -copies data from spotify.db into newly created db
+        '''
         self.create_all_tables()
         for i in self.tables:
             self.insert_from_old_db(i)
             print(f'created {i}')
         print('Database is ready to go!')
 
-anfisa = Origin_Story()
+#anfisa = Origin_Story()
 
 ########################################################
+
+if __name__ == "__main__":
+    anfisa = Origin_Story()
+    anfisa.initialize()

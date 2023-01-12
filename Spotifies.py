@@ -134,3 +134,20 @@ class new_artist_info(request):
         self.img_url = self.values[5]
     
 
+class most_recent_song(request):
+    '''
+    Grabs whatever I was just listening to from the API
+    '''
+    def __init__(self, table_name='recently_played'):
+        super().__init__()
+        self.raw_json = self.sp.current_user_recently_played(limit=1)
+
+    def most_recent_dict(self):
+        last_song = self.raw_json['items'][0]
+        artist_name = last_song['track']['artists'][0]['name']
+        song_name =  last_song['track']['name']
+        song_link = last_song['track']['external_urls']['spotify']
+        image = last_song['track']['album']['images'][0]['url']
+        last_played = last_song['played_at']
+        return dict(art_name=artist_name, song_name=song_name, song_link=song_link, image=image, last_played=last_played)
+        

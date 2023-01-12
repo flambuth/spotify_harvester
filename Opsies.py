@@ -53,3 +53,7 @@ def daily_update_job():
     update_daily_table('daily_artists')
     update_daily_table('daily_tracks')
     print('Daily Job completed')
+
+########################################################
+if __name__ == "__main__":
+    daily_update_job()

@@ -3,6 +3,8 @@ from Spotifies import new_artist_info
 from Genresie import assign_master_genre
 from datetime import date
 
+db = '/home/flambuth/my_spotipy/my_spotipy.db'
+
 def make_question_marks(cols):
     '''
     Returns the string with the right amount of ?s and commas in between them for a SQL INSERT statement
@@ -21,7 +23,7 @@ def make_insert_query(table, col_names):
     insert_sql = f'''INSERT INTO {table} ({col_string}) VALUES ({marks}) '''
     return insert_sql
 
-def query_db(query, db='my_spotipy.db'):
+def query_db(query, db=db):
     '''
     Returns a set of .fetchall() restults from the db
 
@@ -50,7 +52,7 @@ def fetch_latest_chart(table):
 
 
 class DB_Table:
-    database = 'my_spotipy.db'
+    database = db
     tables = ['daily_tracks','daily_artists','recently_played','artist_catalog']
     table_schemas = {
             'artist_catalog' : [
@@ -244,3 +246,30 @@ class Artist_Catalog(DB_Table):
         for i in art_id_list:
             self.add_to_catalog(i)
         
+class Recently_Played(DB_Table):
+    def __init__(self, table='recently_played'):
+        super().__init__(table)
+        self.playlist_history = query_db('select * from recently_played;')
+        self.latest_song = query_db('select * from recently_played ORDER BY id DESC LIMIT 1;')
+
+
+
+    def add_most_recent_song(self, latest_song):
+        '''
+        Takes a 'Spotifies.recently_played' dict object, processes that into an insert to the 
+        recently_played table on the database
+        '''
+        list_version = [i for i in latest_song.values()]
+        query = make_insert_query(self.table, self.col_names)
+        
+        conn = sqlite3.connect(self.database)
+        cursor = conn.cursor()
+        cursor.execute(query, list_version)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print(f'{list_version[1]} added to recently_played')
+
+
+
+
